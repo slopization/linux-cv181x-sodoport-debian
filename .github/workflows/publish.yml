@@ -1,0 +1,24 @@
+name: publish
+on:
+  workflow_dispatch:
+    inputs:
+      build-run-id:
+        description: Successful build run ID
+        required: true
+        type: string
+      artifact-name:
+        description: Artifact from that build
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  publish:
+    uses: slopization/debian-ci/.github/workflows/publish.yml@v2
+    with:
+      build-run-id: ${{ inputs.build-run-id }}
+      artifact-name: ${{ inputs.artifact-name }}
+      suite: trixie
+    secrets:
+      DEB_CREDENTIALS: ${{ secrets.DEB_CREDENTIALS }}
