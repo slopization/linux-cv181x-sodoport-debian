@@ -20,14 +20,13 @@ permissions:
 jobs:
   build:
     if: inputs.source-repository == 'slopization/linux-cv181x-sodoport'
-    # Release shared CI v2 before enabling this caller remotely.
-    uses: slopization/debian-ci/.github/workflows/package.yml@v2
+    uses: slopization/debian-ci/.github/workflows/package.yml@v2.0.1
     with:
       source-repository: ${{ inputs.source-repository }}
       source-sha: ${{ inputs.source-sha }}
       source-tag: ${{ inputs.source-tag }}
       recipe-repository: ${{ github.repository }}
       # Immutable packaging commit, deliberately preceding caller-only changes.
-      recipe-sha: fc661a0128622120d08c95fb2c1793db0f3836bc
+      recipe-sha: b44fc316c8b3e94b6a110e44fa31f375a58e1ec3
       suite: trixie
       host-arch: riscv64
