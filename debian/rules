@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+SHELL := /bin/bash
+.SHELLFLAGS := -eu -o pipefail -c
 export DH_VERBOSE = 1
 
 ARCH := riscv

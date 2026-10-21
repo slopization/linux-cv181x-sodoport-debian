@@ -27,7 +27,7 @@ The manual [build caller](.github/workflows/build.yml) accepts
 `source-tag`. Only `slopization/linux-cv181x-sodoport` is allowed. The dispatch
 bridge may invoke this same API; build execution does not publish packages.
 The caller pins an existing, preceding packaging commit with `recipe-sha` and
-uses shared `slopization/debian-ci` CI at `v2` (release shared CI before use).
+uses shared `slopization/debian-ci` CI at the fixed `v2.0.1` release.
 After packaging changes, commit those first and update the literal pin in a
 separate caller-only commit. Never use a future or self-referential pin.
 
@@ -61,7 +61,9 @@ debian/scripts/update-config.sh /path/to/linux
 
 The effective config keeps in-tree LT6911UXE disabled (the separate DKMS
 package owns that driver), Wave420L as a module, and DWC2 dual-role enabled.
-This migration does not change kernel configuration or package build rules.
+Kernel configuration and compiler selection remain unchanged. Packaging uses
+fail-fast Bash recipes, including pipeline failures, so failed module install or
+header-helper rebuilding cannot be hidden by a later successful command.
 
 ## Outputs
 
