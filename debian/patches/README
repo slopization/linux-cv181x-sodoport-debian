@@ -1,4 +1,4 @@
 Only Debian-specific packaging fixes belong here. The series is currently empty.
 Hardware, board DTS, camera, and Wave420L changes are source commits in
-https://github.com/slopization/linux-cv181x-sodoport (main and stacked patch branches).
+https://github.com/slopization/linux-cv181x-sodoport (cv181x and dependency-grouped topic branches).
 Do not duplicate those commits as quilt patches. The package remains 3.0 (quilt).

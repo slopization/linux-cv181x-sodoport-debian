@@ -4,13 +4,21 @@ This repository contains only Debian packaging for the `cv181x-sodoport`
 flavour (Milk-V Duo 256M / SG2002 family, including NanoKVM PCIe).
 Sources live in [slopization/linux-cv181x-sodoport](https://github.com/slopization/linux-cv181x-sodoport),
 a fork of torvalds/linux based on `v7.1`. The six board/media patches formerly
-carried by this recipe are now source commits, aggregated on source `main`
-with stacked per-patch branches. Do not apply them a second time as quilt patches.
+carried by this recipe contain eight commits, now aggregated on source `cv181x`.
+Dependent commits are grouped in stacked topic branches. Do not apply them a
+second time as quilt patches.
 
 ## Branches and builds
 
 - Recipe `main`: packaging only. The previous remote recipe branch was `master`.
-- Source `main`: Linux plus hardware changes; source history is not imported here.
+- Source `cv181x`: Linux v7.1 plus all eight hardware commits; source history is not imported here.
+- `patch/01-sg2002-duo256m`: Duo256M DTS (one commit).
+- `patch/02-licheerv-nano-ethernet`: adds Ethernet support on top of the first topic.
+- `patch/03-nanokvm-platform`: adds the six dependent NanoKVM camera/GPIO/reset/
+  pinctrl, board DTS/fixups/OLED, Wave420L driver and enablement commits; same tip
+  as `cv181x`. Topic branches are stacked, not advertised as independently buildable.
+- Only pushes to source `cv181x` are watched for kernel CI; topic branches, upstream
+  `master`, and kernel tags do not automatically build.
 - Historical generated `latest`, `upstream/latest`, and `pristine-tar` branches
   are not inputs to the new build. No workflow generates or pushes Git refs.
 
