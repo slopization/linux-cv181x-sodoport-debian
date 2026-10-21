@@ -1,139 +1,71 @@
 # Recipe-only Debian packaging for Linux 7.1
 
-`linux_recipe/` is a packaging-only Git repository for a Milk-V Duo 256M
-kernel package built from upstream Linux `7.1`, published under the
-`cv181x-sodoport` flavour name.
+This repository contains only Debian packaging for the `cv181x-sodoport`
+flavour (Milk-V Duo 256M / SG2002 family, including NanoKVM PCIe).
+Sources live in [slopization/linux-cv181x-sodoport](https://github.com/slopization/linux-cv181x-sodoport),
+a fork of torvalds/linux based on `v7.1`. The six board/media patches formerly
+carried by this recipe are now source commits, aggregated on source `main`
+with stacked per-patch branches. Do not apply them a second time as quilt patches.
 
-CI and the local `sbuild` wrapper default to Debian 13 (`trixie`) so the
-packaged kernel, headers, and typical target-side DKMS builds all use the same
-toolchain baseline.
+## Branches and builds
 
-The repository intentionally does not contain unpacked upstream sources.
+- Recipe `main`: packaging only. The previous remote recipe branch was `master`.
+- Source `main`: Linux plus hardware changes; source history is not imported here.
+- Historical generated `latest`, `upstream/latest`, and `pristine-tar` branches
+  are not inputs to the new build. No workflow generates or pushes Git refs.
 
-**Branch model**
+The manual [build caller](.github/workflows/build.yml) accepts
+`source-repository`, full lowercase 40-character `source-sha`, and optional raw
+`source-tag`. Only `slopization/linux-cv181x-sodoport` is allowed. The dispatch
+bridge may invoke this same API; build execution does not publish packages.
+The caller pins an existing, preceding packaging commit with `recipe-sha` and
+uses shared `slopization/debian-ci` CI at `v2` (release shared CI before use).
+After packaging changes, commit those first and update the literal pin in a
+separate caller-only commit. Never use a future or self-referential pin.
 
-- `master`: recipe-only branch. CI builds artifacts, regenerates the published
-  `gbp` branches, and pushes them back to GitHub.
-- `latest-recipe`: recipe-only branch. CI builds and publishes `.deb` files to
-  `deb-s3` without updating the published `gbp` branches.
-- `latest`: generated build branch with unpacked upstream sources plus
-  `debian/`.
-- `upstream/latest`: imported upstream source branch for `gbp`.
-- `pristine-tar`: `pristine-tar` metadata.
+Shared CI assembles the source snapshot with the pinned recipe, retaining
+`3.0 (quilt)` for Debian-only fixes (currently no patches). It builds in a
+native amd64 Debian 13 (`trixie`) unshare chroot using `sbuild --build amd64
+--host riscv64 --arch-all`. Explicit arch-all builds the source bundle as well
+as the four riscv64 packages. No target emulation or generated-source Git
+branch is required. Artifacts include source archives, binaries, logs,
+changes, buildinfo, and source/recipe provenance, including on build failure.
 
-The generated `latest` branch is reconstructed by CI with `uscan` and
-`gbp import-orig`, or by reapplying `debian/` onto the existing imported
-upstream branch when the upstream version has not changed.
+Publishing is separate and manual through the [publish caller](.github/workflows/publish.yml):
+supply a successful build run ID and artifact name. Publishing credentials
+(`DEB_CREDENTIALS`) belong only to publishing, never to build dispatch.
 
-The initial board configuration and DTS seed are derived from the local
-`/root/uboot/sg2002` Alpine package draft, but the Debian recipe keeps only the
-kernel-facing pieces:
+## Board configuration and provenance
 
-- `debian/config/cv181x-sodoport.config` is a temporary generated seed
-  translated from the Alpine `cv180x.riscv64.config`, with the Alpine
-  localversion replaced by the `cv181x-sodoport` flavour suffix.
-- `debian/patches/0001-riscv-dts-sophgo-add-sg2002-milkv-duo256m.patch`
-  carries the board DTS addition for upstream `7.1`.
-- `debian/config/base/` and `debian/config/fragments/` now hold the
-  long-term config inputs. The intended Debian workflow is to replace the
-  placeholder `debian-common.fragment` with one generated from the intersection
-  of Debian kernel configs across architectures, then regenerate the full board
-  config with `debian/scripts/update-config.sh`.
-
-**Local build flow**
-
-```sh
-cd /root/uboot/linux_recipe
-git fetch origin latest upstream/latest pristine-tar --tags || true
-git worktree add ../linux-build origin/master
-cd ../linux-build
-version=$(dpkg-parsechangelog --show-field Version | sed 's/-[^-]*$//')
-uscan --check-dirname-level 0 --download-current-version --rename --destdir ..
-gbp import-orig --no-interactive --debian-branch=latest \
-  --upstream-branch=upstream/latest --upstream-version "$version" \
-  ../linux-cv181x-sodoport_${version}.orig.tar.xz
-dpkg-buildpackage -us -uc -b -a riscv64
-```
-
-Once the upstream tree is imported, create or refresh patches from committed
-source changes with:
-
-```sh
-git format-patch -1 --stdout <commit> > /path/to/debian/patches/NNNN-description.patch
-```
-
-To regenerate the checked-in board config from the fragment stack after you
-derive a real Debian `debian-common.fragment`, run:
+The initial board configuration and DTS seed came from the local
+`/root/uboot/sg2002` Alpine package draft. The Debian recipe retained only the
+kernel-facing pieces. The checked-in [board config](debian/config/cv181x-sodoport.config)
+is a generated seed derived from Alpine `cv180x.riscv64.config`, with the
+localversion replaced by the `cv181x-sodoport` flavour suffix.
+The [base and fragment inputs](debian/config/README) remain unchanged.
+The intended long-term Debian common fragment should be derived from the
+intersection of Debian kernel configurations. Regenerate against an already
+available source tree with the retained [configuration helper](debian/scripts/update-config.sh):
 
 ```sh
 debian/scripts/update-config.sh /path/to/linux
 ```
 
-The Debian outputs are split as follows:
+The effective config keeps in-tree LT6911UXE disabled (the separate DKMS
+package owns that driver), Wave420L as a module, and DWC2 dual-role enabled.
+This migration does not change kernel configuration or package build rules.
 
-- `linux-image-7.1.0-cv181x-sodoport`: the versioned kernel package, which
-  installs `/boot/vmlinuz-7.1.0-cv181x-sodoport`,
-  `/boot/System.map-7.1.0-cv181x-sodoport`,
-  `/boot/config-7.1.0-cv181x-sodoport`, board DTBs under
-  `/usr/lib/linux-image-7.1.0-cv181x-sodoport/`, and modules under
-  `/lib/modules/7.1.0-cv181x-sodoport/`.
-- `linux-image-cv181x-sodoport`: an unversioned meta-package that depends on
-  the current versioned kernel.
-- `linux-headers-7.1.0-cv181x-sodoport`: the versioned headers package, which
-  installs a prepared kernel header tree under
-  `/usr/src/linux-headers-7.1.0-cv181x-sodoport` and the standard
-  `/lib/modules/7.1.0-cv181x-sodoport/{build,source}` symlinks for external
-  module builds.
-- `linux-headers-cv181x-sodoport`: an unversioned meta-package that depends on
-  the current versioned headers package.
-- `linux-source-cv181x-sodoport`: a compressed, patched source tree under
-  `/usr/src/`.
+## Outputs
 
-The kernel package itself does not choose a board DTB. When `u-boot-menu` is
-installed by a board support package, Debian kernel hooks still regenerate
-`/boot/extlinux/extlinux.conf`; the board package is responsible for setting
-`fdtfile` in U-Boot and for any `u-boot-menu` policy such as DTB syncing or
-overlay paths.
+- `linux-image-7.1.0-cv181x-sodoport`: versioned image, System.map and config
+  under `/boot`, board DTBs under `/usr/lib/linux-image-7.1.0-cv181x-sodoport/`,
+  and modules under `/lib/modules/7.1.0-cv181x-sodoport/`.
+- `linux-image-cv181x-sodoport`: current-image meta-package.
+- `linux-headers-7.1.0-cv181x-sodoport`: prepared headers under `/usr/src`,
+  with conventional module build/source symlinks.
+- `linux-headers-cv181x-sodoport`: current-headers meta-package.
+- `linux-source-cv181x-sodoport`: compressed source tree under `/usr/src`.
 
-**CI inputs**
-
-- `DEB_S3_BUCKET` repo variable: required for `deb-s3` publishing.
-- `DEB_S3_CODENAME`, `DEB_S3_COMPONENT`, `DEB_S3_REGION`, `DEB_S3_ENDPOINT`,
-  `DEB_S3_FORCE_PATH_STYLE`, `DEB_S3_PREFIX`, `DEB_S3_ORIGIN`, `DEB_S3_SUITE`,
-  `DEB_S3_CLEAN`, `DEB_S3_PRESERVE_VERSIONS`, `DEB_S3_LOCK`,
-  `DEB_S3_FAIL_IF_EXISTS`, `DEB_S3_USE_SESSION_TOKEN`, `DEB_S3_VISIBILITY`,
-  `DEB_S3_SIGN_KEY` repo variables: optional publish controls. Set
-  `DEB_S3_SIGN_KEY` to a full fingerprint or key ID to make `deb-s3` sign both
-  `InRelease` and `Release.gpg`.
-- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` secrets:
-  used by `deb-s3`.
-- `DEB_REPO_SIGNING_PRIVATE_KEY` secret: optional ASCII-armored or base64
-  encoded private OpenPGP key for repository signing.
-- `DEB_REPO_SIGNING_PASSPHRASE` secret: optional passphrase for the private
-  key. CI passes it to `gpg` through a temporary file with loopback pinentry.
-
-To create a dedicated repository signing key locally:
-
-```sh
-gpg --quick-gen-key 'Sodo Repo Signing <repo@example.com>' ed25519 sign 2y
-key_id=$(gpg --list-secret-keys --with-colons 'Sodo Repo Signing <repo@example.com>' | awk -F: '/^fpr:/ { print $10; exit }')
-gpg --armor --export-secret-keys "$key_id" > repository-signing-private.asc
-gpg --armor --export "$key_id" > repository-signing-key.asc
-gpg --export "$key_id" > repository-signing-key.gpg
-```
-
-Then configure GitHub as follows:
-
-- repo variable `DEB_S3_SIGN_KEY`: set it to the fingerprint in `key_id`, or
-  leave it unset and let CI use the first imported secret key.
-- repo secret `DEB_REPO_SIGNING_PRIVATE_KEY`: paste the contents of
-  `repository-signing-private.asc`.
-- repo secret `DEB_REPO_SIGNING_PASSPHRASE`: set it only if the private key is
-  passphrase protected.
-
-When signing is enabled, the `latest-recipe` workflow also exports
-`repository-signing-key.asc` and `repository-signing-key.gpg` into the uploaded
-build artifact so clients can install the public key.
-
-`ci/run-sbuild.sh` refreshes the Debian archive keyring from the official
-Debian package pool when bootstrapping a Debian mirror.
+The kernel package does not choose a board DTB. With `u-boot-menu` installed,
+Debian kernel hooks regenerate `/boot/extlinux/extlinux.conf`; the board
+support package owns `fdtfile`, DTB syncing, and overlay policy.

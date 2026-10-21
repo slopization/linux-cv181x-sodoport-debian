@@ -1,7 +1,1 @@
-# Add only patches generated from Linux source commits with `git format-patch`.
-0001-riscv-dts-sophgo-add-sg2002-milkv-duo256m.patch
-0003-riscv-dts-sophgo-enable-licheerv-nano-ethernet.patch
-0004-riscv-sophgo-add-nanokvm-camera-hardware-support.patch
-0005-riscv-dts-sophgo-add-sg2002-nanokvm-pcie.patch
-0006-media-chips-media-add-wave420l-wave4-VPU-driver.patch
-0007-riscv-dts-sophgo-enable-Wave420L-on-NanoKVM-PCIe.patch
+# Debian-only patches, if needed. Hardware changes live in the source repository.

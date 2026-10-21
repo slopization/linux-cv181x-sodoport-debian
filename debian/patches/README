@@ -1,7 +1,4 @@
-Place downstream DTS and board-enablement patches in this directory.
-
-Preferred maintainer workflow:
-
-1. Import the upstream source tree with `gbp import-orig`.
-2. Make changes in the generated `latest` branch.
-3. Record the patch with `dpkg-source --commit`.
+Only Debian-specific packaging fixes belong here. The series is currently empty.
+Hardware, board DTS, camera, and Wave420L changes are source commits in
+https://github.com/slopization/linux-cv181x-sodoport (main and stacked patch branches).
+Do not duplicate those commits as quilt patches. The package remains 3.0 (quilt).
