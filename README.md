@@ -43,6 +43,17 @@ Publishing is separate and manual through the [publish caller](.github/workflows
 supply a successful build run ID and artifact name. Publishing credentials
 (`DEB_CREDENTIALS`) belong only to publishing, never to build dispatch.
 
+## Verified pipeline
+
+[Kernel build and artifacts](https://github.com/slopization/linux-cv181x-sodoport-debian/actions/runs/39569419468)
+passed through the live App/Worker. Image, headers and meta packages are riscv64;
+source is Architecture:all (plus a RISC-V headers debug-symbol package). Artifact
+hashes, source/recipe provenance, dependency metadata, target header tools and
+source archive integrity were checked without installing packages on the host.
+Headers declare computed Perl/library dependencies for the shipped RISC-V tools.
+Board boot and target-side DKMS smoke tests remain separate; no APT publication
+was triggered by this verification.
+
 ## Board configuration and provenance
 
 The initial board configuration and DTS seed came from the local
