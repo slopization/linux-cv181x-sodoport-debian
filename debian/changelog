@@ -1,3 +1,9 @@
+linux-cv181x-sodoport (7.1-10) trixie; urgency=medium
+
+  * Declare detected Perl and shared-library dependencies for header tools.
+
+ -- Packaging Maintainer <maintainer@example.com>  Wed, 21 Oct 2026 08:09:25 +0000
+
 linux-cv181x-sodoport (7.1-9) trixie; urgency=medium
 
   * Move board and media patches into the cv181x source fork.

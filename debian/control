@@ -53,7 +53,7 @@ Description: Meta-package for the cv181x-sodoport kernel
 
 Package: linux-headers-7.1.0-cv181x-sodoport
 Architecture: riscv64
-Depends: ${misc:Depends}
+Depends: ${misc:Depends}, ${perl:Depends}, ${shlibs:Depends}
 Description: Linux kernel headers 7.1.0 for the cv181x-sodoport flavour
  Installs a prepared kernel header tree under
  /usr/src/linux-headers-7.1.0-cv181x-sodoport for out-of-tree module builds,
