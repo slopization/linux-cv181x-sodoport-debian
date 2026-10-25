@@ -24,7 +24,17 @@ HEADER_INSTALL_DIR := /usr/src/$(HEADER_PACKAGE)
 SOURCE_INSTALL_DIR := /usr/src
 SOURCE_VERSION := $(shell dpkg-parsechangelog --show-field Version | sed 's/-[^-]*$$//')
 KERNEL_CONFIG := $(CURDIR)/debian/config/$(KERNEL_NAME).config
-KMAKE = $(MAKE) O="$(BUILD_DIR)" ARCH="$(ARCH)" CROSS_COMPILE="$(CROSS_COMPILE)"
+# Rust on riscv is only available when the kernel is compiled with clang
+# (arch/riscv/Kconfig: select HAVE_RUST if CC_IS_CLANG), so the whole
+# build uses LLVM.
+#
+# LLVM_IAS=0 is required, not cosmetic: with the integrated assembler
+# riscv modules get R_RISCV_ALIGN relocations because -Wa,-mno-relax is
+# ignored, and the module loader rejects them -- that breaks xor.ko and
+# with it btrfs, so the root filesystem fails to mount. Assembling with
+# GNU binutils via CROSS_COMPILE avoids that.
+LLVM_FLAGS := LLVM=1 LLVM_IAS=0
+KMAKE = $(MAKE) O="$(BUILD_DIR)" ARCH="$(ARCH)" CROSS_COMPILE="$(CROSS_COMPILE)" $(LLVM_FLAGS)
 
 %:
 	dh $@

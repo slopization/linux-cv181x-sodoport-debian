@@ -8,19 +8,25 @@ Build-Depends:
 Build-Depends-Arch:
  bc,
  bison,
+ bindgen,
  binutils-riscv64-linux-gnu:any,
+ clang,
  cpio,
  device-tree-compiler,
  flex,
  gcc-riscv64-linux-gnu,
  kmod,
+ libclang-dev,
  libelf-dev:native,
  libssl-dev,
  libssl-dev:native,
  openssl,
+ lld,
+ llvm,
  pahole,
  python3:any,
  rsync,
+ rustc,
  zstd
 Standards-Version: 4.7.0
 Rules-Requires-Root: no

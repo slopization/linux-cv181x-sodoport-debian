@@ -4,3 +4,8 @@
 # Replace this file with a generated fragment once the Debian kernel packaging
 # source is imported for reference. Keep board- and SoC-specific symbols in the
 # dedicated fragments below rather than in this file.
+
+# Rust support; on riscv this needs the clang/LLVM build configured in
+# debian/rules, because arch/riscv/Kconfig gates HAVE_RUST on CC_IS_CLANG.
+CONFIG_RUST=y
+CONFIG_RUST_OVERFLOW_CHECKS=y
