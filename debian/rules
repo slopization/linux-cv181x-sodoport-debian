@@ -89,7 +89,9 @@ override_dh_auto_install-arch:
 		cp "$(CURDIR)/$$file" "$$hdst/$$file"; \
 	done; \
 	cd "$(BUILD_DIR)"; \
-	CC="$(CROSS_COMPILE)gcc" \
+	CC="$(CROSS_COMPILE)clang" \
+	LLVM=1 \
+	LLVM_IAS=0 \
 	HOSTCC=cc \
 	MAKE="$(MAKE)" \
 	SRCARCH="$(ARCH)" \
