@@ -61,6 +61,10 @@ CONFIG_CLK_SOPHGO_CV1800=y
 CONFIG_SOPHGO_CV1800_RTCSYS=y
 
 CONFIG_WATCHDOG=y
+# The CV1800B/SG2002 SoC watchdog (snps,dw-wdt) and its sysfs
+# attributes; without the driver /dev/watchdog does not exist.
+CONFIG_DW_WATCHDOG=y
+CONFIG_WATCHDOG_SYSFS=y
 CONFIG_THERMAL=y
 CONFIG_POWER_RESET=y
 CONFIG_RTC_CLASS=y
