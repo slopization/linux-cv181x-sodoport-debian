@@ -3,10 +3,12 @@
 This repository contains only Debian packaging for the `cv181x-sodoport`
 flavour (Milk-V Duo 256M / SG2002 family, including NanoKVM PCIe).
 Sources live in [slopization/linux-cv181x-sodoport](https://github.com/slopization/linux-cv181x-sodoport),
-a fork of torvalds/linux based on `v7.1`. The six board/media patches formerly
-carried by this recipe contain eight commits, now aggregated on source `cv181x`.
-Dependent commits are grouped in stacked topic branches. Do not apply them a
-second time as quilt patches.
+a fork of torvalds/linux based on `v7.3`. The camera, pinctrl, Ethernet,
+CV1800B watchdog-node and Wave420L changes are commits on source `cv181x`;
+dependent commits are grouped in stacked topic branches. Do not apply those
+source commits a second time as quilt patches. The NanoKVM PCIe board device
+tree and its watchdog enablement are the exception: board enablement stays out
+of the source branch and is carried by `debian/patches` instead.
 
 ## Branches and builds
 
@@ -32,7 +34,7 @@ After packaging changes, commit those first and update the literal pin in a
 separate caller-only commit. Never use a future or self-referential pin.
 
 Shared CI assembles the source snapshot with the pinned recipe, retaining
-`3.0 (quilt)` for Debian-only fixes (currently no patches). It builds in a
+`3.0 (quilt)` for the NanoKVM PCIe board and watchdog patches. It builds in a
 native amd64 Debian 13 (`trixie`) unshare chroot using `sbuild --build amd64
 --host riscv64 --arch-all`. Explicit arch-all builds the source bundle as well
 as the four riscv64 packages. No target emulation or generated-source Git

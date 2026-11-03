@@ -1,0 +1,19 @@
+Description: dts: enable the CV1800B watchdog on the NanoKVM PCIe
+ The SoC device tree describes the DesignWare watchdog but leaves it
+ disabled, as SoC dtsi files normally do. Enable it for this board so
+ /dev/watchdog exists and the watchdog can supervise the system.
+Forwarded: not-needed
+Last-Update: 2026-10-24
+--- a/arch/riscv/boot/dts/sophgo/sg2002-nanokvm-pcie.dts
++++ b/arch/riscv/boot/dts/sophgo/sg2002-nanokvm-pcie.dts
+@@ -233,6 +233,10 @@
+ 	status = "okay";
+ };
+ 
++&watchdog {
++	status = "okay";
++};
++
+ &{/soc} {
+ 	csi: csi@a0c2000 {
+ 		compatible = "sophgo,sg2002-csi";

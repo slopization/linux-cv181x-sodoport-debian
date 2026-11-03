@@ -1,4 +1,20 @@
-Only Debian-specific packaging fixes belong here. The series is currently empty.
-Hardware, board DTS, camera, and Wave420L changes are source commits in
-https://github.com/slopization/linux-cv181x-sodoport (cv181x and dependency-grouped topic branches).
-Do not duplicate those commits as quilt patches. The package remains 3.0 (quilt).
+Patches here apply on top of the kernel source snapshot.
+
+0001 adds the NanoKVM PCIe board device tree (OLED and Wave420L nodes included)
+and its dtb entry.  Board enablement is not part of the kernel source branch,
+which only carries the SoC-level Wave420L controller node, its binding and the
+driver; keeping the board out of that series lets the driver be reviewed and
+submitted on its own.
+
+0002 enables the CV1800B watchdog for that board, on top of the board file.
+
+0003 advertises the C906's T-Head vector extension (RVV 0.7.1) on the SoC CPU
+node, with the 128-bit vlenb the kernel's homogeneity check requires.  The
+kernel would otherwise keep it disabled: the GhostWrite errata probe treats
+every c9xx core (marchid/impid 0) as vulnerable and disables the extension, so
+the board configuration turns CONFIG_ERRATA_THEAD_GHOSTWRITE off.  The C906 is
+not affected by GhostWrite.
+
+Camera, pinctrl, Ethernet, watchdog-node and Wave420L driver changes remain
+kernel source commits in https://github.com/slopization/linux-cv181x-sodoport.
+Do not duplicate those commits here.  The package remains 3.0 (quilt).

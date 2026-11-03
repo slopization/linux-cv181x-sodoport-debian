@@ -1,1 +1,3 @@
-# Debian-only patches, if needed. Hardware changes live in the source repository.
+0001-dts-add-sg2002-nanokvm-pcie-board.patch
+0002-dts-enable-watchdog.patch
+0003-dts-enable-c906-xtheadvector.patch

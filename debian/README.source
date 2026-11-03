@@ -1,15 +1,21 @@
 This repository contains only the Debian recipe for cv181x-sodoport.
 
-Linux source and the six board/media enablement patches are maintained as
-commits in https://github.com/slopization/linux-cv181x-sodoport, based on
-upstream torvalds/linux v7.1. Source main aggregates stacked patch branches.
-Do not reapply those hardware patches from Debian quilt packaging.
+Linux source is maintained as commits in
+https://github.com/slopization/linux-cv181x-sodoport, based on upstream
+torvalds/linux v7.3.  The source branch carries the camera, pinctrl, Ethernet,
+CV1800B watchdog-node and Wave420L (driver plus SoC controller node) changes.
+Do not reapply those source commits from Debian quilt packaging.
+
+Board enablement is deliberately kept out of the source branch: the NanoKVM
+PCIe board device tree and its watchdog enablement are quilt patches in
+debian/patches, because they are board policy rather than driver or SoC
+support, and the board patches are submitted separately.
 
 Shared slopization/debian-ci CI assembles an immutable source SHA and an
 independently pinned recipe SHA, creates the orig tarball from the source
 Git archive, and builds the 3.0 (quilt) source package. No uscan, gbp import,
-generated-source branches, or Git pushes are used. debian/patches is reserved
-for Debian-only changes; its series is currently empty.
+generated-source branches, or Git pushes are used. debian/patches carries the
+NanoKVM PCIe board device tree and the watchdog enablement for that board.
 
 Cross-building uses a native amd64 trixie chroot with sbuild --build amd64
 --host riscv64 --arch-all. This includes linux-source (Architecture: all)

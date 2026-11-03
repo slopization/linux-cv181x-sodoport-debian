@@ -1,3 +1,12 @@
+linux-cv181x-sodoport (7.3-1) trixie; urgency=medium
+
+  * Build the current cv181x source, based on Linux 7.3.
+  * Carry the NanoKVM PCIe board device tree as a quilt patch; board
+    enablement is no longer part of the kernel source branch.
+  * Enable the CV1800B watchdog for that board on top of the board patch.
+
+ -- Packaging Maintainer <maintainer@example.com>  Thu, 05 Nov 2026 09:14:09 -0500
+
 linux-cv181x-sodoport (7.1-10) trixie; urgency=medium
 
   * Declare detected Perl and shared-library dependencies for header tools.

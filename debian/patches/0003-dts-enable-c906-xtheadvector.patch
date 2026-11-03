@@ -1,0 +1,21 @@
+Description: dts: advertise the C906 T-Head vector unit (RVV 0.7.1)
+ The CV1800B/SG2002 C906 core implements T-Head's pre-1.0 vector extension,
+ which the kernel exposes as "xtheadvector".  Neither the ISA string nor the
+ vlenb property is set in the SoC dtsi, so the kernel never enables the vector
+ unit and /proc/cpuinfo reports no vector extension at all.
+ .
+ Advertise the extension on the CPU node and state the 128-bit vector register
+ width (vlenb = 16 bytes), which the kernel's homogeneity check requires.
+--- a/arch/riscv/boot/dts/sophgo/cv180x-cpus.dtsi	2026-11-06 05:40:41.184762319 -0500
++++ b/arch/riscv/boot/dts/sophgo/cv180x-cpus.dtsi	2026-11-06 05:40:41.212095290 -0500
+@@ -24,7 +24,9 @@
+ 			riscv,isa = "rv64imafdc";
+ 			riscv,isa-base = "rv64i";
+ 			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "zicntr", "zicsr",
+-					       "zifencei", "zihpm";
++					       "zifencei", "zihpm", "xtheadvector";
++			/* C906 vector registers are 128 bits wide. */
++			thead,vlenb = <16>;
+ 
+ 			cpu0_intc: interrupt-controller {
+ 				compatible = "riscv,cpu-intc";
