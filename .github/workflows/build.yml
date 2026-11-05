@@ -27,6 +27,6 @@ jobs:
       source-tag: ${{ inputs.source-tag }}
       recipe-repository: ${{ github.repository }}
       # Immutable packaging commit, deliberately preceding caller-only changes.
-      recipe-sha: 0968a461de900ed6201f12d00ad3a81aee63994a
+      recipe-sha: 43009e3741e4d9d9d1a59fc6c5eb59aa67681875
       suite: trixie
       host-arch: riscv64
