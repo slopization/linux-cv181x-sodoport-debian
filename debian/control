@@ -4,12 +4,11 @@ Priority: optional
 Maintainer: Packaging Maintainer <maintainer@example.com>
 Build-Depends:
  debhelper (>= 13~),
- xz-utils
-Build-Depends-Arch:
+ xz-utils,
  bc,
- bison,
  bindgen,
- binutils-riscv64-linux-gnu:any,
+ bison,
+ binutils-riscv64-linux-gnu,
  clang,
  cpio,
  device-tree-compiler,
@@ -17,12 +16,11 @@ Build-Depends-Arch:
  gcc-riscv64-linux-gnu,
  kmod,
  libclang-dev,
- libelf-dev:native,
+ libelf-dev,
  libssl-dev,
- libssl-dev:native,
- openssl,
  lld,
  llvm,
+ openssl,
  pahole,
  python3:any,
  rsync,
